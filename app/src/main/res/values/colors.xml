@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- system color -->
+    <color name="purple_200">#8F4EE0</color>
+    <color name="purple_500">#431F69</color>
+    <!-- status color -->
+    <color name="purple_700">#E1E1E1</color>
+
+    <color name="teal_200">#2DD397</color>
+    <color name="teal_700">#1DB7CA</color>
+
+    <!-- own color -->
+    <color name="text_color">#FF000000</color>
+    <color name="background_color">#F7F7F7</color>
+    <color name="tool_bar">#ABF4FE</color>
+    <color name="nav_header_center">#59C3D0</color>
+    <color name="nav_header_end">#018FA1</color>
+    <color name="nav_header_start">#32E1F8</color>
+    <color name="light_white">#D6D8D9</color>
+    <color name="status_bar">#E749E0F4</color>
+    <color name="drawer">#17BACF</color>
+    <color name="tele_back">#12C0DE</color>
+    <color name="card_bg">#CFF6FB</color>
+    <color name="tool_text">#007787</color>
+
+    <!-- primary color -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+</resources>

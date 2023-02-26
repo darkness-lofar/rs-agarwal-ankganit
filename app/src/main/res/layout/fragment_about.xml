@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#8BDAD7D7"
+        android:contentDescription="@string/about"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="119dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/raju" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="Raju Kumar Singh"
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="About"
+                        android:textColor="@color/text_color"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="3dp"
+                        android:text="RS Agarwal Ankganit"
+                        android:textColor="@color/text_color"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="22dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="22dp"
+                        android:minHeight="48dp"
+                        android:text="This app is build by the Rocking Developer ( Raju kumar singh) analysing of all the critical aspect of the Naveen Ankganit By RS Agarwals. The main aim of this app is to provide the build logical framework, grow problem solving ability and enhance Your ranks for all exam easily. This App will help the student increase provided all small village read books for free. For any query and valuable suggestion , you can contact below provide address 👇   "
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="22dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="22dp"
+                        android:inputType="textImeMultiLine"
+                        android:minHeight="48dp"
+                        android:text="Copyright"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        tools:ignore="TextViewEdits" />
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="22dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="22dp"
+                        android:minHeight="48dp"
+                        android:text="All rights reserved, No part of the publication may be reproduced, distributed, or transmitted in any from by means, including, or other electronic photocopying, recording other mechanical method, without the prior written permission of the publisher,l expect in the case of brief quotations embodies in critical reviews and certain other non comercial uses permitted by copyright law. For permission request , write to the publisher, addressed Attention: Permission Coordinator at the address below 👇 "
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:id="@+id/email_copy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:drawableLeft="@drawable/ic_baseline_email_24"
+                        android:padding="3dp"
+                        android:text="Email:-"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:padding="3dp"
+                        android:text="@string/developerrocking_gmail_com"
+                        android:textColor="@color/text_color"
+                        android:textSize="16sp"
+                        app:drawableEndCompat="@drawable/ic_baseline_content_copy_24" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/background_color"
+                android:elevation="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:padding="3dp"
+                        android:text="😊 Thanks For Download 😊"
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

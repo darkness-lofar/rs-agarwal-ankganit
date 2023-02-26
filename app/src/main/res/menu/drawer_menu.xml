@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/ic_baseline_home_24"
+            android:title="@string/home"
+            android:checked="true"/>
+        <item
+            android:id="@+id/theme"
+            android:icon="@drawable/ic_baseline_color_lens_24"
+            android:title="@string/theme" />
+        <item
+            android:id="@+id/telegram"
+            android:icon="@drawable/baseline_send_24"
+            android:title="@string/join_our_telegram_group"/>
+        <item
+            android:id="@+id/share"
+            android:icon="@drawable/ic_baseline_share_24"
+            android:title="@string/share_this_app" />
+        <item
+            android:id="@+id/rating"
+            android:icon="@drawable/ic_baseline_star_rate_24"
+            android:title="@string/please_rating_us_app" />
+        <item
+            android:id="@+id/exit_app"
+            android:icon="@drawable/ic_baseline_exit_to_app_24"
+            android:title="@string/exit_app" />
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_baseline_info_24"
+            android:title="@string/about" />
+        <item
+            android:id="@+id/update"
+            android:icon="@drawable/ic_baseline_update_24"
+            android:title="@string/checking_update" />
+        <item
+            android:id="@+id/privacy"
+            android:icon="@drawable/ic_baseline_privacy_tip_24"
+            android:title="@string/privacy_policy" />
+        <item
+            android:id="@+id/terms"
+            android:icon="@drawable/terms"
+            android:title="@string/terms_and_conditions" />
+    </group>
+
+    <item
+        android:menuCategory="secondary"
+        android:title="@string/more_services">
+        <menu>
+            <group
+                android:checkableBehavior="single"
+                android:enabled="true"
+                android:menuCategory="secondary">
+                <item
+                    android:id="@+id/sd_yadav"
+                    android:icon="@drawable/ic_baseline_menu_book_24"
+                    android:menuCategory="secondary"
+                    android:title="@string/sd_yadav_math" />
+                <item
+                    android:id="@+id/arihant_reasoning"
+                    android:icon="@drawable/ic_baseline_menu_book_24"
+                    android:menuCategory="secondary"
+                    android:title="@string/arihant_reasoning_book" />
+
+                <item
+                    android:id="@+id/more_app"
+                    android:icon="@drawable/ic_baseline_more_24"
+                    android:menuCategory="secondary"
+                    android:title="@string/more_apps" />
+            </group>
+        </menu>
+    </item>
+</menu>

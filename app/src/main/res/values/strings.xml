@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">RS Agarwal Ankganit</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="share_this_app">Share This App</string>
+    <string name="please_rating_us_app">Please Rate Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_and_conditions">Terms And Conditions</string>
+    <string name="about">About</string>
+    <string name="checking_update">Check Manual Update</string>
+    <string name="more_services">More Services</string>
+    <string name="home">Home</string>
+    <string name="sd_yadav_math">SD Yadav Math</string>
+    <string name="more_apps">More Apps</string>
+    <string name="theme">Theme</string>
+    <string name="developerrocking_gmail_com">developerrocking@gmail.com</string>
+
+    <string name="INTERSTITIAL_AD_UNIT_ID">ca-app-pub-5570732625549892/2298057712</string>
+    <string name="BANNER_AD_UNIT_ID">ca-app-pub-5570732625549892/8594817495</string>
+
+    <!-- test ad id banner , interstitial -->
+    <string name="BANNER_TEST_AD_UNIT_ID">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="INTERSTITIAL_Test_AD_UNIT_ID">ca-app-pub-3940256099942544/1033173712</string>
+
+    <string name="exit_app">Exit App</string>
+    <string name="arihant_reasoning_book">Arihant Reasoning Book</string>
+    <string name="join_our_telegram_group">join our telegram Group</string>
+    <string name="continue_reading">Continue reading</string>
+    <string name="join_now">JOIN NOw</string>
+
+    <string-array name="theme">
+        <item>System Default</item>
+        <item>Light</item>
+        <item>Night</item>
+    </string-array>
+
+</resources>
