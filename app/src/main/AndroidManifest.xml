@@ -36,7 +36,7 @@
         <!-- original ID: ca-app-pub-5570732625549892~9648044719 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5570732625549892~9648044719" />
+            android:value="ca-app-pub-3940256099942544~3347511713" />
         <receiver android:name=".MainActivity" />
 
     </application>

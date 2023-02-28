@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     public NetworkStateReceiver networkStateReceiver;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         //auto update check
         inAppUpdate();
         bottomsheetDialog();
-
 
 
         // find xml layout variable
@@ -165,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         if (days == Calendar.MONDAY) {
             bottomPreferences = MainActivity.this.getSharedPreferences("bottom", MODE_PRIVATE);
             shows = bottomPreferences.getBoolean("boolea", false);
-            if (!shows) {
+            if (shows == false) {
                 try {
                     BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialog);
                     View v = LayoutInflater.from(this).inflate(R.layout.bottomsheet_layout, (LinearLayout) findViewById(R.id.bottmsheets_lay));
@@ -183,12 +181,14 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     });
                     bottomSheetDialog.show();
 
-                    shows = false;
+                    bottomCheckBoolean(false);
 
                 } catch (Exception e) {
                     bottomCheckBoolean(false);
                     Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                bottomCheckBoolean(false);
             }
         } else {
             bottomCheckBoolean(false);
@@ -383,7 +383,12 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     @Override
     public void onBackPressed() {
         // check visibility nav bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        checkFullScreen();
+        doubleBackPress();
+    }
+
+    public void checkFullScreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             View decorView = getWindow().getDecorView();
             if (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 2) {
                 decorView.setSystemUiVisibility(
@@ -399,7 +404,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             }
         }
-        doubleBackPress();
     }
 
     private void exitApp() {
@@ -435,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
         if (back_pressed + 2000 >= System.currentTimeMillis()) {
             exitApp();
-//            moveTaskToBack(true);
         }
         back_pressed = System.currentTimeMillis();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
@@ -551,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                         fragReplace(new AboutFragment());
                         break;
                     case R.id.exit_app:
-                       exitApp();
+                        exitApp();
                         break;
                     case R.id.theme:
                         showDialog();

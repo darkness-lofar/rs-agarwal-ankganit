@@ -47,7 +47,7 @@ public class BookViewFragment extends Fragment {
     private FragmentBookViewBinding binding;
 
     // variable for receive position, ch number
-    public String getPosition, chNumber, getPageNum,pageNum;
+    public String getPosition, chNumber, getPageNum, pageNum;
     public Boolean getBoolean;
     boolean orientation = false;
     ImageView rotationMode, telegram;
@@ -260,9 +260,8 @@ public class BookViewFragment extends Fragment {
                         countDownTimer.cancel();
 
                         saveDataPref();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            showSystemUI();
-                        }
+                        showSystemUI();
+
 
                         HomeFragment homeFragment = new HomeFragment();
                         requireActivity().getSupportFragmentManager()
@@ -297,7 +296,15 @@ public class BookViewFragment extends Fragment {
     @Override
     public void onDestroy() {
         saveDataPref();
+        showSystemUI();
         super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        saveDataPref();
+        showSystemUI();
+        super.onDetach();
     }
 
     @Override
@@ -323,8 +330,6 @@ public class BookViewFragment extends Fragment {
     }
 
     // hide toolbar, status bar, etc
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("ObsoleteSdkInt")
     private void hideSystemUI() {
         // Set the IMMERSIVE flag.
         // Set the content to appear under the system bars so that the content
@@ -336,7 +341,7 @@ public class BookViewFragment extends Fragment {
 
             View decorView = requireActivity().getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                             | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
@@ -357,8 +362,8 @@ public class BookViewFragment extends Fragment {
     }
 
     // show toolbar, status bar, etc
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("ObsoleteSdkInt")
+
+
     private void showSystemUI() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();

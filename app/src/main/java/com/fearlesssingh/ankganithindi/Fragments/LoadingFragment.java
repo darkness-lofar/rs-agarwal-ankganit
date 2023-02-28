@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -50,9 +51,10 @@ public class LoadingFragment extends Fragment {
     String getPositions, chNumbers, pageNum;
     Boolean getBooleans;
 
+    Handler handler;
+
     // variable for interstitial ads
     private InterstitialAd mInterstitialAd;
-    String AD_Id;
     ConnectivityManager connectivityManager;
     NetworkInfo networkInfo;
     AppBarLayout appBarLayout;
@@ -101,10 +103,10 @@ public class LoadingFragment extends Fragment {
 
         // call back button method init
         stopWorkingBackButton(view);
-       // isNetworkConnected();
+        // isNetworkConnected();
         // call getBundle method
         getBundle();
-
+        isNetworkConnected(requireContext());
 
         // find xml component
         toolbar = requireActivity().findViewById(R.id.topToolbar);
@@ -114,73 +116,15 @@ public class LoadingFragment extends Fragment {
         appBarLayout.setVisibility(View.GONE);
 
 
-        // init interstitial ad
-        AD_Id = requireContext().getResources().getString(R.string.INTERSTITIAL_AD_UNIT_ID);
-        MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                if (initializationStatus != null) {
-                    loadInterstitialAd();
-//                                if (isNetworkConnected()) {
-//                                    loadInterstitialAd();
-//                                } else {
-//                                    createTimers(COUNTER_TIME_SEND_PDFLAYOUT);
-//                                }
-                }else {
-                    createTimers(COUNTER_TIME_SEND_PDFLAYOUT);
-                }
-            }
-        });
-
-
         return view;
-    }
-
-
-    // 5 sec after then send data to pdf frag
-    @SuppressLint("ObsoleteSdkInt")
-    private void createTimers(long sec) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            View decore = requireActivity().getWindow().getDecorView();
-            toolbar.setVisibility(View.GONE);
-            appBarLayout.setVisibility(View.GONE);
-            if (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 2) {
-                decore.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|
-                                View.SYSTEM_UI_FLAG_FULLSCREEN
-
-                );
-                decore.setFitsSystemWindows(true);
-            }
-        }
-
-        countDownTimer = new CountDownTimer(sec * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                secondsRemaining = ((millisUntilFinished / 1000) + 1);
-            }
-
-            @Override
-            public void onFinish() {
-                secondsRemaining = 0;
-                sendPdfFragBundle();
-            }
-
-        };
-        countDownTimer.start();
     }
 
 
     // load interstitial ad
     public void loadInterstitialAd() {
-        createTimers(COUNTER_TIME);
         if (System.currentTimeMillis() >= 2500) {
             AdRequest adRequest = new AdRequest.Builder().build();
-            InterstitialAd.load(requireContext(), AD_Id, adRequest,
+            InterstitialAd.load(requireContext(), requireContext().getResources().getString(R.string.INTERSTITIAL_Test_AD_UNIT_ID), adRequest,
                     new InterstitialAdLoadCallback() {
                         @Override
                         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
@@ -196,7 +140,6 @@ public class LoadingFragment extends Fragment {
                                     public void onAdDismissedFullScreenContent() {
                                         super.onAdDismissedFullScreenContent();
                                         mInterstitialAd = null;
-                                        countDownTimer.cancel();
                                         sendPdfFragBundle();
                                     }
 
@@ -206,12 +149,10 @@ public class LoadingFragment extends Fragment {
                                         Log.e("TAG", "Ad failed to show fullscreen content.");
                                         mInterstitialAd = null;
                                         sendPdfFragBundle();
-                                        countDownTimer.cancel();
                                     }
 
                                 });
                             } else {
-                                countDownTimer.cancel();
                                 sendPdfFragBundle();
                             }
 
@@ -221,52 +162,59 @@ public class LoadingFragment extends Fragment {
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                             // Handle the error
                             mInterstitialAd = null;
-                            countDownTimer.cancel();
                             sendPdfFragBundle();
                         }
                     });
         } else {
-            countDownTimer.cancel();
             sendPdfFragBundle();
         }
     }
 
     // check internet
-    @SuppressLint("ServiceCast")
-    public boolean isNetworkConnected() {
+    public void isNetworkConnected(Context context) {
         try {
-            connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.NETWORK_STATS_SERVICE);
+            connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             networkInfo = connectivityManager.getActiveNetworkInfo();
+            handler = new Handler();
 
-            if (networkInfo.isConnectedOrConnecting()){
-                Toast.makeText(requireContext(), "connecting / connected", Toast.LENGTH_SHORT).show();
-            } else if (networkInfo.isAvailable()) {
-                Toast.makeText(requireContext(), "available", Toast.LENGTH_SHORT).show();
-            } else if (networkInfo.isConnected()) {
-                Toast.makeText(requireContext(), "connected", Toast.LENGTH_SHORT).show();
-            } else if (networkInfo.isConnected()) {
-                Toast.makeText(requireContext(), "disconnected", Toast.LENGTH_SHORT).show();
-            } else if (networkInfo.isFailover()) {
-                Toast.makeText(requireContext(), "fail", Toast.LENGTH_SHORT).show();
-            }else {
-                Toast.makeText(requireContext(), networkInfo.getState().name(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(requireContext(), networkInfo.getReason(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(requireContext(), networkInfo.getTypeName(), Toast.LENGTH_SHORT).show();
+            if (networkInfo != null) {
+                Toast.makeText(context, "connected", Toast.LENGTH_SHORT).show();
+                MobileAds.initialize(context, new OnInitializationCompleteListener() {
+                    @Override
+                    public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                        if (initializationStatus != null) {
+                            handler.postAtTime(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadInterstitialAd();
+                                }
+                            },8000);
+
+                        } else {
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendPdfFragBundle();
+                                }
+                            },3000);
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(context, "disconnected", Toast.LENGTH_SHORT).show();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendPdfFragBundle();
+                    }
+                },3000);
             }
 
-
-
-            // check download and upload speed
-//            networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-//            int down = networkCapabilities.getLinkDownstreamBandwidthKbps();
-//            int up = networkCapabilities.getLinkUpstreamBandwidthKbps();
-//            Toast.makeText(requireContext(), "down" + down + "up"+ up, Toast.LENGTH_SHORT).show();
-
-            return networkInfo != null && networkInfo.isConnected() && networkInfo.isAvailable();
+            //      return networkInfo != null && networkInfo.isConnected();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            //  return false;
         }
     }
 
