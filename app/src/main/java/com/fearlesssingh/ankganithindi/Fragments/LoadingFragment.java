@@ -1,19 +1,12 @@
 package com.fearlesssingh.ankganithindi.Fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.fearlesssingh.ankganithindi.R;
 import com.fearlesssingh.ankganithindi.databinding.FragmentLoadingBinding;
 import com.google.android.gms.ads.AdError;
@@ -41,20 +33,16 @@ public class LoadingFragment extends Fragment {
 
     // init binding
     FragmentLoadingBinding binding;
-
     //variable for get bundle
     String getPositions, chNumbers, pageNum;
     Boolean getBooleans;
-
     Handler handler;
-
     // variable for interstitial ads
     private InterstitialAd mInterstitialAd;
     ConnectivityManager connectivityManager;
     NetworkInfo networkInfo;
     AppBarLayout appBarLayout;
     MaterialToolbar toolbar;
-    CountDownTimer countDownTimer;
 
 
     // TODO: Rename parameter arguments, choose names that match
