@@ -42,11 +42,6 @@ public class LoadingFragment extends Fragment {
     // init binding
     FragmentLoadingBinding binding;
 
-    // variable for remaining time
-    private static final long COUNTER_TIME = 8;
-    private static final long COUNTER_TIME_SEND_PDFLAYOUT = 3;
-    public long secondsRemaining;
-
     //variable for get bundle
     String getPositions, chNumbers, pageNum;
     Boolean getBooleans;
