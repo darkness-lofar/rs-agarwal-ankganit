@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "967021705912",
+    "project_id": "book-dc84f",
+    "storage_bucket": "book-dc84f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967021705912:android:19cae030afaa1b882b924d",
+        "android_client_info": {
+          "package_name": "com.fearlesssingh.ankganithindi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967021705912-puvlhpdg0i50pgu5t1r2fa260asivaj2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATeCgLDTQjSW4Rn5lU5pvv1OQc3rYqy2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967021705912-puvlhpdg0i50pgu5t1r2fa260asivaj2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

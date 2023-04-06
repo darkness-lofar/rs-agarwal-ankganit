@@ -29,14 +29,15 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|uiMode"
-            android:exported="true" />
+            android:exported="true" >
+        </activity>
 
 
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
         <!-- original ID: ca-app-pub-5570732625549892~9648044719 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="@string/APP_ID" />
         <receiver android:name=".MainActivity" />
 
     </application>

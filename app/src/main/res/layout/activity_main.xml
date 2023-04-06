@@ -6,14 +6,12 @@
     android:id="@+id/main_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
     tools:context=".MainActivity">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,36 +19,29 @@
             android:layout_height="match_parent"
             android:background="@color/background_color">
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appBarLayout"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="wrap_content"
+                android:background="@color/background_color"
+                ads:layout_constraintEnd_toEndOf="parent"
+                ads:layout_constraintStart_toStartOf="parent"
+                ads:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.appbar.AppBarLayout
-                    android:id="@+id/appBarLayout"
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/topToolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/background_color">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/toolbar_bg"
+                    app:navigationIcon="@drawable/ic_baseline_dehaze_24"
+                    app:navigationIconTint="@color/tool_text"
+                    app:title="@string/app_name"
+                    app:titleTextColor="@color/tool_text" />
+            </com.google.android.material.appbar.AppBarLayout>
 
-                    <com.google.android.material.appbar.MaterialToolbar
-                        android:id="@+id/topToolbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="20dp"
-                        android:background="@drawable/toolbar_bg"
-                        android:visibility="visible"
-                        app:navigationIcon="@drawable/ic_baseline_dehaze_24"
-                        app:navigationIconTint="@color/tool_text"
-                        app:title="@string/app_name"
-                        app:titleTextColor="@color/tool_text" />
-                </com.google.android.material.appbar.AppBarLayout>
-            </LinearLayout>
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/frame_layout"
@@ -58,10 +49,10 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@color/background_color"
+                ads:layout_constraintTop_toBottomOf="@+id/appBarLayout"
                 app:layout_constraintBottom_toTopOf="@+id/adView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout"
                 tools:layout="@layout/fragment_home" />
 
             <com.google.android.gms.ads.AdView
@@ -82,7 +73,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_main"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/background_color"

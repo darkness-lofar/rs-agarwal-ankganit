@@ -12,7 +12,7 @@
 
     <!-- own color -->
     <color name="text_color">#FF000000</color>
-    <color name="background_color">#F7F7F7</color>
+    <color name="background_color">#DCFBFC</color>
     <color name="tool_bar">#ABF4FE</color>
     <color name="nav_header_center">#59C3D0</color>
     <color name="nav_header_end">#018FA1</color>
@@ -21,8 +21,9 @@
     <color name="status_bar">#E749E0F4</color>
     <color name="drawer">#17BACF</color>
     <color name="tele_back">#12C0DE</color>
-    <color name="card_bg">#CFF6FB</color>
+    <color name="card_bg">#CDF9FE</color>
     <color name="tool_text">#007787</color>
+    <color name="bg">#C7E9ED</color>
 
     <!-- primary color -->
     <color name="white">#FFFFFF</color>

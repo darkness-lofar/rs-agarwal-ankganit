@@ -48,8 +48,7 @@ public class BookViewFragment extends Fragment {
 
     // variable for receive position, ch number
     public String getPosition, chNumber, getPageNum, pageNum;
-    public Boolean getBoolean;
-    boolean orientation = false;
+    public Boolean getBoolean,orientation = false;
     ImageView rotationMode, telegram;
 
     // variable for view pdf
@@ -134,31 +133,9 @@ public class BookViewFragment extends Fragment {
         pdfView.setOnClickListener(new View.OnClickListener() {
             boolean show = false;
 
-            @SuppressLint("ObsoleteSdkInt")
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 oneClickFullscreen();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if (show) {
-                        appBarLayout.animate().translationY(-appBarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                        toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                        appBarLayout.setVisibility(View.GONE);
-                        toolbar.setVisibility(View.GONE);
-                        hideSystemUI();
-
-                        show = false;
-                    } else {
-
-                        appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                        appBarLayout.setVisibility(View.VISIBLE);
-                        toolbar.setVisibility(View.VISIBLE);
-                        showSystemUI();
-
-                        show = true;
-                    }
-                }
             }
         });
 
@@ -238,8 +215,6 @@ public class BookViewFragment extends Fragment {
                 secondRemaining = ((l / 1000) + 1);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @SuppressLint("ObsoleteSdkInt")
             @Override
             public void onFinish() {
                 secondRemaining = 0;
@@ -258,10 +233,8 @@ public class BookViewFragment extends Fragment {
                 if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
                     if (i == KeyEvent.KEYCODE_BACK) {
                         countDownTimer.cancel();
-
                         saveDataPref();
                         showSystemUI();
-
 
                         HomeFragment homeFragment = new HomeFragment();
                         requireActivity().getSupportFragmentManager()
@@ -334,20 +307,21 @@ public class BookViewFragment extends Fragment {
         // Set the IMMERSIVE flag.
         // Set the content to appear under the system bars so that the content
         // doesn't resize when the system bars hide and show.
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();
             Objects.requireNonNull(appCompatActivity.getSupportActionBar()).hide();
 
             View decorView = requireActivity().getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    //View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    // | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    // View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    // | View.SYSTEM_UI_FLAG_IMMERSIVE
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                            | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                            |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            |View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            |View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             );
             decorView.setFitsSystemWindows(true);
 
@@ -359,19 +333,21 @@ public class BookViewFragment extends Fragment {
             rotationMode.setVisibility(View.GONE);
             telegram.setVisibility(View.GONE);
         }
+        try {
+
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     // show toolbar, status bar, etc
-
-
-    private void showSystemUI() {
+    public void showSystemUI() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();
             Objects.requireNonNull(appCompatActivity.getSupportActionBar()).show();
 
             View decorView = requireActivity().getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             decorView.setFitsSystemWindows(true);
             decorView.setVisibility(View.VISIBLE);
             decorView.setSystemUiVisibility(View.VISIBLE);
@@ -384,6 +360,7 @@ public class BookViewFragment extends Fragment {
             rotationMode.setVisibility(View.VISIBLE);
             telegram.setVisibility(View.VISIBLE);
         }
+
     }
 
     private void getBundle() {

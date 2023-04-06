@@ -1,7 +1,9 @@
 package com.fearlesssingh.ankganithindi;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -10,9 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,26 +20,22 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.fearlesssingh.ankganithindi.Fragments.AboutFragment;
 import com.fearlesssingh.ankganithindi.Fragments.HomeFragment;
 import com.fearlesssingh.ankganithindi.InternetPermission.NetworkStateReceiver;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
@@ -62,34 +58,22 @@ import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.play.core.tasks.OnFailureListener;
 import com.google.android.play.core.tasks.Task;
-
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
-    // double back press variable
-    long back_pressed;
-
-    //auto update check
-    private static final int UPDATE_CODE = 22;
-    AppUpdateManager updateManager;
-
-    // rating on phone use google api
-    ReviewInfo reviewInfo;
-
+    ////////// others /////////////////
     boolean shows = false;
-    // set variable for theme
-    public SharedPreferences sharedPreferences, bottomPreferences;
-    public SharedPreferences.Editor editor, bottomEditors;
-    public int checkedItem;
-    public String selected;
-    public final String CHECKED_ITEM = "checked_item";
-
-    //banner ads variable
-    AdView mAdView;
-
-
     // Drawer navigation variable
     NavigationView navigationView;
     DrawerLayout drawerLayout;
@@ -101,31 +85,55 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     // make variable for net connection
     public NetworkStateReceiver networkStateReceiver;
 
+    /////////// end others ///////////////
 
+    // double back press variable
+    long back_pressed;
+
+    //auto update ads check /////////////
+    //banner ads variable
+    AdView mAdView;
+
+    private static final int UPDATE_CODE = 22;
+    public static boolean connect = false;
+    AppUpdateManager updateManager;
+    // rating on phone use google api
+    ReviewInfo reviewInfo;
+    /////////// update end ///////////////
+
+
+    // set variable for theme
+    SharedPreferences sharedPreferences;
+    static SharedPreferences bottomPreferences;
+    SharedPreferences.Editor editor;
+    static SharedPreferences.Editor bottomEditors;
+    int checkedItem;
+    String selected;
+    String CHECKED_ITEM;
+
+    ///////// end theme //////////////////
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //auto update check
-        inAppUpdate();
-        bottomsheetDialog();
-
 
         // find xml layout variable
         toolbar = findViewById(R.id.topToolbar);
         appBarLayout = findViewById(R.id.appBarLayout);
         drawerLayout = findViewById(R.id.main_drawer_layout);
         navigationView = findViewById(R.id.nav_main);
+        // init banner ads and find banner id view and init
+        mAdView = findViewById(R.id.adView);
 
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).show();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-        // init banner ads and find banner id view and init
-        mAdView = findViewById(R.id.adView);
-
+        bottomsheetDialog();
 
         sharedPreferences = this.getSharedPreferences("themes", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -142,21 +150,24 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         }
 
 
+        drawerMainMenuListener();
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START, true);
             }
         });
-        drawerMainMenuListener();
+
 
         // Network receiver class init
         networkStateReceiver = new NetworkStateReceiver();
         networkStateReceiver.addListener(this);
-        this.registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+        this.registerReceiver(networkStateReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
     }
 
+
+    ///// bottom dialog show join telegram group/////////////////////
     public void bottomsheetDialog() {
         Calendar calendar = Calendar.getInstance();
         int days = calendar.get(Calendar.DAY_OF_WEEK);
@@ -203,30 +214,106 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         bottomEditors.putBoolean("boolea", b);
         bottomEditors.apply();
     }
+    /////////////// end telegram group //////////////////////////////
 
 
-    // create this method check auto app update available then show dialog
-    private boolean inAppUpdate() {
-        if (isNetworkConnected(this)) {
-            updateManager = AppUpdateManagerFactory.create(this);
-            Task<AppUpdateInfo> task = updateManager.getAppUpdateInfo();
-            task.addOnSuccessListener(appUpdateInfo -> {
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-                    try {
-                        updateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, MainActivity.this, UPDATE_CODE);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
+    // check, show dialog and check mobile day night mode //////////////////////
+
+    public void showDialog() {
+        String[] themes = this.getResources().getStringArray(R.array.theme);
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle("Choose Theme");
+        builder.setIcon(R.drawable.ic_baseline_color_lens_24);
+
+        builder.setSingleChoiceItems(themes, getCheckedItem(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                selected = themes[i];
+                checkedItem = i;
+                setCheckedItem(getCheckedItem());
+            }
+        });
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (selected == null) {
+                    selected = themes[getCheckedItem()];
+                    checkedItem = i;
+
                 }
-            });
-            task.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(Exception e) {
+
+                switch (checkedItem) {
+                    case 0:
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        Intent intent = getIntent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent);
+                        break;
+
+                    case 1:
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        Intent intent1 = getIntent();
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent1);
+                        break;
+                    case 2:
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        Intent intent2 = getIntent();
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent2);
+                        break;
                 }
-            });
-            updateManager.registerListener(installStateUpdatedListener);
-        }
+                setCheckedItem(checkedItem);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.create();
+        builder.show();
+    }
+
+    public int getCheckedItem() {
+        return sharedPreferences.getInt(CHECKED_ITEM, checkedItem);
+    }
+
+    public void setCheckedItem(int i) {
+        editor.putInt(CHECKED_ITEM, i);
+        editor.apply();
+    }
+//////////////// end theme //////////////////////////////////
+
+
+    // when app update Available then run this method///////////////////////
+    public boolean inAppUpdate() {
+        updateManager = AppUpdateManagerFactory.create(this);
+        Task<AppUpdateInfo> task = updateManager.getAppUpdateInfo();
+        task.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                try {
+                    updateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, MainActivity.this, UPDATE_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+            }
+        });
+        updateManager.registerListener(installStateUpdatedListener);
+
         return false;
     }
 
@@ -259,151 +346,33 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             }
         }
     }
+//////////////////////////////////////////////////  end update ////////////////////////////////////
 
 
-    // load rating dialog  show when app is restart
-    @Override
-    protected void onRestart() {
-        loadRating();
-        super.onRestart();
-    }
-
-    public void loadRating() {
-
-        ReviewManager manager = ReviewManagerFactory.create(this);
-        Task<ReviewInfo> request = manager.requestReviewFlow();
-        request.addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // We can get the ReviewInfo object
-                reviewInfo = task.getResult();
-            } else {
-                // There was some problem, log or handle the error code.
-                Toast.makeText(this, "review failed to start", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if (reviewInfo != null) {
-            Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
-            flow.addOnCompleteListener(task -> {
-                // The flow has finished. The API does not indicate whether the user
-                // reviewed or not, or even whether the review dialog was shown. Thus, no
-                // matter the result, we continue our app flow.
-                if (task.isSuccessful()) {
-                    // custom dialog show on success
-                } else {
-                    Toast.makeText(this, "error while review ", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(this, "rate", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-
-    // check, show dialog and check mobile day night mode
-    private void showDialog() {
-        String[] themes = this.getResources().getStringArray(R.array.theme);
-
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle("Choose Theme");
-        builder.setIcon(R.drawable.ic_baseline_color_lens_24);
-        builder.setSingleChoiceItems(R.array.theme, getCheckedItem(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                selected = themes[i];
-                checkedItem = i;
-
-            }
-        });
-
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (selected == null) {
-                    selected = themes[getCheckedItem()];
-                    checkedItem = getCheckedItem();
-
-                }
-
-                switch (checkedItem) {
-                    case 0:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-
-                        Intent intent = getIntent();
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent);
-                        break;
-
-                    case 1:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
-                        Intent intent1 = getIntent();
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent1);
-                        break;
-                    case 2:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-
-                        Intent intent2 = getIntent();
-                        intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent2);
-
-                        break;
-                }
-                setCheckedItem(checkedItem);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public int getCheckedItem() {
-        return sharedPreferences.getInt(CHECKED_ITEM, checkedItem);
-    }
-
-    private void setCheckedItem(int i) {
-        editor.putInt(CHECKED_ITEM, i);
-        editor.apply();
-    }
-
-
-    // create method double back press then show exit dialog
-    @SuppressLint("ObsoleteSdkInt")
+    // exit method double back press then show exit dialog ////////////////////////////////
     @Override
     public void onBackPressed() {
         // check visibility nav bar
-        checkFullScreen();
-        doubleBackPress();
-    }
-
-    public void checkFullScreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             View decorView = getWindow().getDecorView();
+            appBarLayout.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.VISIBLE);
+
             if (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 2) {
                 decorView.setSystemUiVisibility(
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE
+                                | View.VISIBLE
                 );
-                appBarLayout.setVisibility(View.VISIBLE);
-                toolbar.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     getWindow().setDecorFitsSystemWindows(true);
                 }
+
             } else {
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             }
         }
+        doubleBackPress();
     }
 
     private void exitApp() {
@@ -436,7 +405,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     }
 
     private void doubleBackPress() {
-
         if (back_pressed + 2000 >= System.currentTimeMillis()) {
             exitApp();
         }
@@ -444,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
 
     }
-
 
     // multiple fragment navigate this method
     private void fragReplace(Fragment fragment) {
@@ -455,46 +422,156 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         transaction.addToBackStack("info").commit();
     }
 
-    // check internet connection this method
-    public boolean isNetworkConnected(@NonNull Context context) {
-        try {
+    //////////////////////// end bak button work ///////////////////////////
 
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            return networkInfo != null && networkInfo.isConnected();
+
+    //////////// show banner ad and check server connection////////////////////////////
+    private void okHttp() {
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url("https://www.google.com")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showCheckConnectionBottomDialog();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                connect = true;
+                                showBannerAd();
+                                inAppUpdate();
+                                loadRating();
+                            }
+                        });
+                    }
+                }
+            });
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
-    // show banner ad
-    private void showBannerAd() {
+    public void showCheckConnectionBottomDialog() {
+        try {
+            BottomSheetDialog bottomSheetDialogs = new BottomSheetDialog(MainActivity.this, com.google.android.material.R.style.Theme_Design_BottomSheetDialog);
+            View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.bottoom_navigation_settings,
+                    (LinearLayout) findViewById(R.id.linear_bottom), false);
+            bottomSheetDialogs.setContentView(view);
+            bottomSheetDialogs.setCancelable(false);
+            TextView settings, telegram;
+            settings = view.findViewById(R.id.settings_tv_btn);
+            telegram = view.findViewById(R.id.join_tele_tv_btn);
+            telegram.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri join = Uri.parse("https://t.me/rockingcommunity");
+                    Intent nows = new Intent(Intent.ACTION_VIEW, join);
+                    startActivity(nows);
+                    finish();
+                    bottomSheetDialogs.cancel();
+                }
+            });
+            settings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
+                        finish();
+                        bottomSheetDialogs.cancel();
+                    } catch (Exception e) {
+                        //Open the generic Apps page:
+                        Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                        startActivity(intent);
+                        Log.d("LOG", "setting exception\n " + e.getLocalizedMessage());
+                    }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        if (adRequest != null) {
-            mAdView.setVisibility(View.VISIBLE);
-            mAdView.loadAd(adRequest);
-        } else {
-            Toast.makeText(this, "ad request null", Toast.LENGTH_SHORT).show();
+                }
+            });
+            bottomSheetDialogs.show();
+        } catch (Exception e) {
+            Log.d("LOG", "exception\n " + e.getLocalizedMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void showBannerAd() {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                if (initializationStatus != null) {
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    if (adRequest != null) {
+                        mAdView.setVisibility(View.VISIBLE);
+                        mAdView.loadAd(adRequest);
+                    } else {
+                        mAdView.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "ad request null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+
+    }
+
+    // load rating dialog  show when app is restart
+    public void loadRating() {
+        ReviewManager manager = ReviewManagerFactory.create(this);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                reviewInfo = task.getResult();
+            } else {
+                // There was some problem, log or handle the error code.
+                Toast.makeText(this, "review failed to start", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (reviewInfo != null) {
+            Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
+            flow.addOnCompleteListener(task -> {
+                // The flow has finished. The API does not indicate whether the user
+                // reviewed or not, or even whether the review dialog was shown. Thus, no
+                // matter the result, we continue our app flow.
+                if (task.isSuccessful()) {
+                    // custom dialog show on success
+                    Toast.makeText(this, "💕thank you❤ \n rating and review this app ", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "error while review ", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
     }
 
     @Override
     public void networkAvailable() {
-        MobileAds.initialize(MainActivity.this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                showBannerAd();
-            }
-        });
+        okHttp();
     }
 
     @Override
     public void networkUnavailable() {
     }
+    //////////////// end show banner ad and check firebase connection ////////////////////////////
 
 
     public void drawerMainMenuListener() {

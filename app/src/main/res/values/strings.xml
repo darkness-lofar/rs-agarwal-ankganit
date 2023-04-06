@@ -17,16 +17,24 @@
 
     <string name="INTERSTITIAL_AD_UNIT_ID">ca-app-pub-5570732625549892/2298057712</string>
     <string name="BANNER_AD_UNIT_ID">ca-app-pub-5570732625549892/8594817495</string>
+    <string name="APP_ID">ca-app-pub-5570732625549892~9648044719</string>
 
     <!-- test ad id banner , interstitial -->
     <string name="BANNER_TEST_AD_UNIT_ID">ca-app-pub-3940256099942544/6300978111</string>
     <string name="INTERSTITIAL_Test_AD_UNIT_ID">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="TEST_APP_ID">ca-app-pub-3940256099942544~3347511713</string>
 
     <string name="exit_app">Exit App</string>
     <string name="arihant_reasoning_book">Arihant Reasoning Book</string>
     <string name="join_our_telegram_group">join our telegram Group</string>
     <string name="continue_reading">Continue reading</string>
     <string name="join_now">JOIN NOw</string>
+
+    <string name="bottom_nav_set_tv">
+        2. If Mobile data or Wi-Fi is enable,it\'s mean your internet is too slow.Please turn off your data and reopen this app.\n\n
+        3. If still not working, please contact on telegram.We are always here for your help.\n\n
+                  "enjoy this app 😊😊😊"
+    </string>
 
     <string-array name="theme">
         <item>System Default</item>

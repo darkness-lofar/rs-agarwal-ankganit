@@ -2,11 +2,14 @@ package com.fearlesssingh.ankganithindi.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,7 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.fearlesssingh.ankganithindi.MainActivity;
 import com.fearlesssingh.ankganithindi.R;
+import com.fearlesssingh.ankganithindi.SplashActivity;
 import com.fearlesssingh.ankganithindi.databinding.FragmentLoadingBinding;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -36,7 +42,7 @@ public class LoadingFragment extends Fragment {
     //variable for get bundle
     String getPositions, chNumbers, pageNum;
     Boolean getBooleans;
-    Handler handler;
+    Handler handler = new Handler();
     // variable for interstitial ads
     private InterstitialAd mInterstitialAd;
     ConnectivityManager connectivityManager;
@@ -86,10 +92,10 @@ public class LoadingFragment extends Fragment {
 
         // call back button method init
         stopWorkingBackButton(view);
-        // isNetworkConnected();
+
         // call getBundle method
         getBundle();
-        isNetworkConnected(requireContext());
+        //isNetworkConnected(requireContext());
 
         // find xml component
         toolbar = requireActivity().findViewById(R.id.topToolbar);
@@ -98,10 +104,28 @@ public class LoadingFragment extends Fragment {
         toolbar.setVisibility(View.GONE);
         appBarLayout.setVisibility(View.GONE);
 
-
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                if (initializationStatus != null) {
+                    isNetworkConnected(requireContext());
+                } else {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendPdfFragBundle();
+                        }
+                    }, 3000);
+                }
+            }
+        });
+    }
 
     // load interstitial ad
     public void loadInterstitialAd() {
@@ -144,6 +168,7 @@ public class LoadingFragment extends Fragment {
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                             // Handle the error
+                            Log.d("TAG", "Ad failed to show fullscreen content.");
                             mInterstitialAd = null;
                             sendPdfFragBundle();
                         }
@@ -158,46 +183,34 @@ public class LoadingFragment extends Fragment {
         try {
             connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             networkInfo = connectivityManager.getActiveNetworkInfo();
-            handler = new Handler();
-
             if (networkInfo != null) {
-                Toast.makeText(context, "connected", Toast.LENGTH_SHORT).show();
-                MobileAds.initialize(context, new OnInitializationCompleteListener() {
-                    @Override
-                    public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                        if (initializationStatus != null) {
-                            handler.postAtTime(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadInterstitialAd();
-                                }
-                            },8000);
-
-                        } else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    sendPdfFragBundle();
-                                }
-                            },3000);
+                if (MainActivity.connect) {
+                    handler.postAtTime(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadInterstitialAd();
                         }
-                    }
-                });
+                    }, 8000);
+
+                } else {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendPdfFragBundle();
+                        }
+                    }, 3000);
+                }
             } else {
-                Toast.makeText(context, "disconnected", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         sendPdfFragBundle();
                     }
-                },3000);
+                }, 3000);
             }
-
-            //      return networkInfo != null && networkInfo.isConnected();
 
         } catch (Exception e) {
             e.printStackTrace();
-            //  return false;
         }
     }
 
@@ -251,4 +264,5 @@ public class LoadingFragment extends Fragment {
             Toast.makeText(getContext(), "bundle null in loading", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

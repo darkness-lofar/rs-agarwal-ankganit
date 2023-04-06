@@ -7,10 +7,9 @@
         android:centerX="0.4"
         android:centerY="0.6"/>
 
-   <corners android:bottomLeftRadius="5dp"
-       android:bottomRightRadius="20dp"
-       android:topLeftRadius="5dp"
-       android:topRightRadius="20dp"/>
+   <corners android:bottomLeftRadius="30dp"
+       android:bottomRightRadius="30dp"
+       android:topRightRadius="30dp"/>
 
     <stroke android:color="@color/nav_header_end"
         android:width="2dp"/>
