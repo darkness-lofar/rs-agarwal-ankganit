@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
@@ -43,13 +44,15 @@ import java.util.Objects;
 
 public class BookViewFragment extends Fragment {
 
+    CardView pdf_cardView;
+
     // variable for binding xml layout
     private FragmentBookViewBinding binding;
 
     // variable for receive position, ch number
     public String getPosition, chNumber, getPageNum, pageNum;
     public Boolean getBoolean,orientation = false;
-    ImageView rotationMode, telegram;
+    ImageView rotationMode, telegram, theme_change;
 
     // variable for view pdf
     private PDFView pdfView;
@@ -60,7 +63,7 @@ public class BookViewFragment extends Fragment {
     // variable for toolbar, appbar
     public MaterialToolbar toolbar;
     public AppBarLayout appBarLayout;
-    boolean show = false;
+    boolean show = false , chackTheme = false;
     long secondRemaining;
     private CountDownTimer countDownTimer;
 
@@ -113,11 +116,13 @@ public class BookViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentBookViewBinding.inflate(inflater, container, false);
         View v = binding.getRoot();
+        //
         // Inflate the layout for this fragment
 
         getBundle();
         initVar();
-        ifCheckPosition();
+        getLightModePdf();
+       // ifCheckPosition();
         //init back method
         handleBackPressAndAutoFullscreen(v);
         // Ui visibility
@@ -327,11 +332,33 @@ public class BookViewFragment extends Fragment {
 
             appBarLayout.animate().translationY(-appBarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
             toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-            rotationMode.animate().translationY(-rotationMode.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-            telegram.animate().translationY(-telegram.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+//            rotationMode.animate().translationY(-rotationMode.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+//            telegram.animate().translationY(-telegram.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+            pdf_cardView.animate().translationY(-pdf_cardView.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
 
-            rotationMode.setVisibility(View.GONE);
-            telegram.setVisibility(View.GONE);
+//            rotationMode.setVisibility(View.GONE);
+//            telegram.setVisibility(View.GONE);
+            pdf_cardView.setVisibility(View.GONE);
+            
+
+            //================= Change Theme ===================//
+            theme_change.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (chackTheme  == true){
+                        getLightModePdf();
+                        chackTheme = false;
+                    }else {
+
+                        getDarkModePdf();
+                        chackTheme = true;
+                    }
+
+
+                    Toast.makeText(appCompatActivity, "change theme", Toast.LENGTH_SHORT).show();
+                }
+            });
+
         }
         try {
 
@@ -351,14 +378,16 @@ public class BookViewFragment extends Fragment {
             decorView.setFitsSystemWindows(true);
             decorView.setVisibility(View.VISIBLE);
             decorView.setSystemUiVisibility(View.VISIBLE);
-
+//
             appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
             toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-            rotationMode.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-            telegram.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+//            rotationMode.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+//            telegram.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+            pdf_cardView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
 
-            rotationMode.setVisibility(View.VISIBLE);
-            telegram.setVisibility(View.VISIBLE);
+//            rotationMode.setVisibility(View.VISIBLE);
+//            telegram.setVisibility(View.VISIBLE);
+            pdf_cardView.setVisibility(View.VISIBLE);
         }
 
     }
@@ -380,17 +409,19 @@ public class BookViewFragment extends Fragment {
         pdfView = binding.pdfView;
         rotationMode = binding.imgRotation;
         telegram = binding.imgTelegram;
+        pdf_cardView = binding.pdfCardView;
+        theme_change = binding.themeChange;
     }
 
-    private void ifCheckPosition() {
-        if (AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM == AppCompatDelegate.getDefaultNightMode()) {
-            checkMode();
-        } else if (AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode()) {
-            getDarkModePdf();
-        } else if (AppCompatDelegate.MODE_NIGHT_NO == AppCompatDelegate.getDefaultNightMode()) {
-            getLightModePdf();
-        }
-    }
+//    private void ifCheckPosition() {
+//        if (AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM == AppCompatDelegate.getDefaultNightMode()) {
+//            checkMode();
+//        } else if (AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode()) {
+//            getDarkModePdf();
+//        } else if (AppCompatDelegate.MODE_NIGHT_NO == AppCompatDelegate.getDefaultNightMode()) {
+//            getLightModePdf();
+//        }
+//    }
 
     private void checkMode() {
         currentNightMode = requireActivity().getResources().getConfiguration().uiMode &

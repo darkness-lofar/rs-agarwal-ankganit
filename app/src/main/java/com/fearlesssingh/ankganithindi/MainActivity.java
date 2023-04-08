@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     SharedPreferences.Editor editor;
     static SharedPreferences.Editor bottomEditors;
     int checkedItem;
-    String selected;
+    String selected = "System Default";
     String CHECKED_ITEM;
 
     ///////// end theme //////////////////
@@ -135,8 +135,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
         bottomsheetDialog();
 
-        sharedPreferences = this.getSharedPreferences("themes", Context.MODE_PRIVATE);
+      /*  sharedPreferences = this.getSharedPreferences("themes", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
         switch (getCheckedItem()) {
             case 0:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
@@ -147,10 +148,12 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             case 2:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
-        }
+        }*/
 
 
         drawerMainMenuListener();
+
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,8 +167,22 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         networkStateReceiver.addListener(this);
         this.registerReceiver(networkStateReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
+
+
     }
 
+    // check, show dialog and check mobile day night mode //////////////////////
+
+
+
+/*    public int getCheckedItem() {
+        return sharedPreferences.getInt(CHECKED_ITEM, 0);
+    }
+
+    public void setCheckedItem(int i) {
+        editor.putInt(CHECKED_ITEM, i);
+        editor.apply();
+    }*/
 
     ///// bottom dialog show join telegram group/////////////////////
     public void bottomsheetDialog() {
@@ -217,79 +234,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     /////////////// end telegram group //////////////////////////////
 
 
-    // check, show dialog and check mobile day night mode //////////////////////
 
-    public void showDialog() {
-        String[] themes = this.getResources().getStringArray(R.array.theme);
-
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle("Choose Theme");
-        builder.setIcon(R.drawable.ic_baseline_color_lens_24);
-
-        builder.setSingleChoiceItems(themes, getCheckedItem(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                selected = themes[i];
-                checkedItem = i;
-                setCheckedItem(getCheckedItem());
-            }
-        });
-
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (selected == null) {
-                    selected = themes[getCheckedItem()];
-                    checkedItem = i;
-
-                }
-
-                switch (checkedItem) {
-                    case 0:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                        Intent intent = getIntent();
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent);
-                        break;
-
-                    case 1:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                        Intent intent1 = getIntent();
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent1);
-                        break;
-                    case 2:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                        Intent intent2 = getIntent();
-                        intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        finish();
-                        startActivity(intent2);
-                        break;
-                }
-                setCheckedItem(checkedItem);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        builder.create();
-        builder.show();
-    }
-
-    public int getCheckedItem() {
-        return sharedPreferences.getInt(CHECKED_ITEM, checkedItem);
-    }
-
-    public void setCheckedItem(int i) {
-        editor.putInt(CHECKED_ITEM, i);
-        editor.apply();
-    }
 //////////////// end theme //////////////////////////////////
 
 
@@ -634,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                         exitApp();
                         break;
                     case R.id.theme:
-                        showDialog();
+                      //  showDialog();
                         break;
                     case R.id.share:
                         Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -655,7 +600,117 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                 }
                 return true;
             }
+
+
+/*            public void showDialog() {
+                final String[] theme = {"System Default", "Light", "Dark"};
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+                builder.setTitle("Choose Theme");
+                builder.setSingleChoiceItems(theme, getCheckedItem(), (dialog, i) -> {
+                    selected = theme[i];
+                    checkedItem = i;
+                    setCheckedItem(getCheckedItem());
+                });
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        if (selected == null) {
+                            selected = theme[i];
+                            checkedItem = i;
+
+
+                        }
+                        switch (selected) {
+                            case "System Default":
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                break;
+                            case "Light":
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                break;
+                            case "Dark":
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                break;
+                        }
+                        setCheckedItem(checkedItem);
+
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+                        ft.replace(R.id.frame_layout, new HomeFragment());
+                        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE); //
+                        ft.commit();
+
+
+                    }
+
+                });
+                builder.setNegativeButton("Exit", (dialog, i) -> dialog.dismiss());
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();*/
+
+     /*   String[] themes = this.getResources().getStringArray(R.array.theme);
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle("Choose Theme");
+        builder.setIcon(R.drawable.ic_baseline_color_lens_24);
+
+        builder.setSingleChoiceItems(themes, getCheckedItem(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                selected = themes[i];
+                checkedItem = i;
+                setCheckedItem(getCheckedItem());
+            }
         });
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (selected == null) {
+                    selected = themes[i];
+                    checkedItem = i;
+
+                }
+
+                switch (selected) {
+                    case "System Default":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        Intent intent = getIntent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent);
+                        break;
+
+                    case "Light":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        Intent intent1 = getIntent();
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent1);
+                        break;
+                    case "Dark":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        Intent intent2 = getIntent();
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        startActivity(intent2);
+                        break;
+                }
+                setCheckedItem(checkedItem);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.create();
+        builder.show();
+            }*/
+        });
+
     }
 
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- system color -->
     <color name="purple_200">#8F4EE0</color>
     <color name="purple_500">#431F69</color>
