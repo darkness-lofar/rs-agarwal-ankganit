@@ -23,6 +23,8 @@
     <color name="card_bg">#CDF9FE</color>
     <color name="tool_text">#007787</color>
     <color name="bg">#C7E9ED</color>
+    <color name="pdf_card">#EAF9FB</color>
+
 
     <!-- primary color -->
     <color name="white">#FFFFFF</color>

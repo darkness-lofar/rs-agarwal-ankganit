@@ -10,10 +10,6 @@
             android:title="@string/home"
             android:checked="true"/>
         <item
-            android:id="@+id/theme"
-            android:icon="@drawable/ic_baseline_color_lens_24"
-            android:title="@string/theme" />
-        <item
             android:id="@+id/telegram"
             android:icon="@drawable/baseline_send_24"
             android:title="@string/join_our_telegram_group"/>

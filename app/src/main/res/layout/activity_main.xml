@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 ads:adSize="BANNER"
-                ads:adUnitId="@string/BANNER_TEST_AD_UNIT_ID"
+                ads:adUnitId="@string/BANNER_AD_UNIT_ID"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

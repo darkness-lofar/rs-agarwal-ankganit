@@ -578,9 +578,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     case R.id.exit_app:
                         exitApp();
                         break;
-                    case R.id.theme:
-                      //  showDialog();
-                        break;
                     case R.id.share:
                         Intent shareIntent = new Intent(Intent.ACTION_SEND);
                         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Rs Agarwal Ankganit");

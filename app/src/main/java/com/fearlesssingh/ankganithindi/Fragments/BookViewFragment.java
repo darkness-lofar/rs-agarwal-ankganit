@@ -349,13 +349,9 @@ public class BookViewFragment extends Fragment {
                         getLightModePdf();
                         chackTheme = false;
                     }else {
-
                         getDarkModePdf();
                         chackTheme = true;
                     }
-
-
-                    Toast.makeText(appCompatActivity, "change theme", Toast.LENGTH_SHORT).show();
                 }
             });
 

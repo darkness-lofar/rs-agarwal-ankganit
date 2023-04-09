@@ -131,7 +131,7 @@ public class LoadingFragment extends Fragment {
     public void loadInterstitialAd() {
         if (System.currentTimeMillis() >= 2500) {
             AdRequest adRequest = new AdRequest.Builder().build();
-            InterstitialAd.load(requireContext(), requireContext().getResources().getString(R.string.INTERSTITIAL_Test_AD_UNIT_ID), adRequest,
+            InterstitialAd.load(requireContext(), requireContext().getResources().getString(R.string.INTERSTITIAL_AD_UNIT_ID), adRequest,
                     new InterstitialAdLoadCallback() {
                         @Override
                         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
