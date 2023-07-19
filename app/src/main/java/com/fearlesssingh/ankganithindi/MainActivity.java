@@ -4,16 +4,13 @@ package com.fearlesssingh.ankganithindi;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,7 +20,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -56,19 +52,18 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.OnCompleteListener;
 import com.google.android.play.core.tasks.OnFailureListener;
 import com.google.android.play.core.tasks.Task;
-import java.io.IOException;
+import com.google.android.ump.ConsentDebugSettings;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.FormError;
+import com.google.android.ump.UserMessagingPlatform;
+
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
@@ -113,6 +108,11 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     ///////// end theme //////////////////
 
+    /// gdpr /////
+    private ConsentInformation consentInformation;
+    private ConsentForm consentForm;
+    ///end  gdpr /////
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         Objects.requireNonNull(getSupportActionBar()).show();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
+        inAppUpdate();
         bottomsheetDialog();
 
       /*  sharedPreferences = this.getSharedPreferences("themes", Context.MODE_PRIVATE);
@@ -167,8 +167,56 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         networkStateReceiver.addListener(this);
         this.registerReceiver(networkStateReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
+        // gdpr policy
+        // Set tag for under age of consent. false means users are not under
+        // age.
 
+        ConsentRequestParameters params = new ConsentRequestParameters
+                .Builder()
+                .setTagForUnderAgeOfConsent(false)
+                .build();
 
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                new ConsentInformation.OnConsentInfoUpdateSuccessListener() {
+                    @Override
+                    public void onConsentInfoUpdateSuccess() {
+                        // The consent information state was updated.
+                        // You are now ready to check if a form is available.
+                        if (consentInformation.isConsentFormAvailable()) {
+                            loadForm();
+                        }                    }
+                },
+                new ConsentInformation.OnConsentInfoUpdateFailureListener() {
+                    @Override
+                    public void onConsentInfoUpdateFailure(FormError formError) {
+                        // Handle the error.
+                    }
+                });
+
+    }
+
+    /// gdpr policy
+    public void loadForm() {
+        // Loads a consent form. Must be called on the main thread.
+        UserMessagingPlatform.loadConsentForm(
+                this,
+                new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
+                    @Override
+                    public void onConsentFormLoadSuccess(@NonNull ConsentForm consentForm) {
+                        MainActivity.this.consentForm = consentForm;
+                    }
+                },
+                new UserMessagingPlatform.OnConsentFormLoadFailureListener() {
+                    @Override
+                    public void onConsentFormLoadFailure(@NonNull FormError formError) {
+                        // Handle the error.
+                        Log.e("form error", formError.getMessage());
+                    }
+                }
+        );
     }
 
     // check, show dialog and check mobile day night mode //////////////////////
@@ -188,13 +236,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     public void bottomsheetDialog() {
         Calendar calendar = Calendar.getInstance();
         int days = calendar.get(Calendar.DAY_OF_WEEK);
-        if (days == Calendar.MONDAY) {
+        if (days == Calendar.WEDNESDAY) {
             bottomPreferences = MainActivity.this.getSharedPreferences("bottom", MODE_PRIVATE);
             shows = bottomPreferences.getBoolean("boolea", false);
-            if (shows == false) {
+            if (!shows) {
                 try {
                     BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialog);
-                    View v = LayoutInflater.from(this).inflate(R.layout.bottomsheet_layout, (LinearLayout) findViewById(R.id.bottmsheets_lay));
+                    View v = LayoutInflater.from(this).inflate(R.layout.bottomsheet_layout, findViewById(R.id.bottmsheets_lay));
                     bottomSheetDialog.setContentView(v);
                     TextView joinNow = v.findViewById(R.id.join_now);
                     joinNow.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         task.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception e) {
+                Toast.makeText(MainActivity.this, "update error \n"+ e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         updateManager.registerListener(installStateUpdatedListener);
@@ -265,7 +314,11 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     InstallStateUpdatedListener installStateUpdatedListener = installState -> {
         if (installState.installStatus() == InstallStatus.DOWNLOADED) {
             popUp();
-        }
+        }else if (installState.totalBytesToDownload() == InstallStatus.DOWNLOADED){
+
+                popUp();
+            }
+
     };
 
     private void popUp() {
@@ -276,7 +329,14 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         snackbar.setAction("install", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateManager.completeUpdate();
+                updateManager.completeUpdate().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isComplete()){
+                            Toast.makeText(MainActivity.this, "enjoy latest version", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
         snackbar.show();
@@ -371,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
 
     //////////// show banner ad and check server connection////////////////////////////
-    private void okHttp() {
+   /* private void okHttp() {
         try {
             OkHttpClient client = new OkHttpClient();
 
@@ -410,9 +470,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
-    public void showCheckConnectionBottomDialog() {
+  /*  public void showCheckConnectionBottomDialog() {
         try {
             BottomSheetDialog bottomSheetDialogs = new BottomSheetDialog(MainActivity.this, com.google.android.material.R.style.Theme_Design_BottomSheetDialog);
             View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.bottoom_navigation_settings,
@@ -455,7 +515,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             Log.d("LOG", "exception\n " + e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     private void showBannerAd() {
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
@@ -509,8 +569,21 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     }
 
     @Override
-    public void networkAvailable() {
-        okHttp();
+    protected void onRestart() {
+        super.onRestart();
+        loadRating();
+    }
+
+    @Override
+    public void networkAvailable(){
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                if (initializationStatus != null){
+                    showBannerAd();
+                }
+            }
+        });
     }
 
     @Override
@@ -538,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                         startActivity(sdIntent);
                         break;
                     case R.id.privacy:
-                        Uri privacyUri = Uri.parse("https://frearlessdevlopers.blogspot.com/2022/02/rs-agarwal-ankganit-privacy-policy.html");
+                        Uri privacyUri = Uri.parse("https://sites.google.com/view/sagir-ahmad-math-book-privacy/home");
                         Intent privacyIntent = new Intent(Intent.ACTION_VIEW, privacyUri);
                         startActivity(privacyIntent);
                         break;

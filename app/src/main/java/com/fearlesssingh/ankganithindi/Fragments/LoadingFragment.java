@@ -104,17 +104,26 @@ public class LoadingFragment extends Fragment {
         toolbar.setVisibility(View.GONE);
         appBarLayout.setVisibility(View.GONE);
 
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                if (initializationStatus != null) {
-                    isNetworkConnected(requireContext());
+                if (isNetworkConnected(requireContext())) {
+                    int random_int = (int) Math.floor(Math.random() * (2 - 1 + 1) + 1);
+                    if (1 == random_int) {
+                        handler.postAtTime(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadInterstitialAd();
+                            }
+                        }, 7000);
+                    } else {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendPdfFragBundle();
+                            }
+                        }, 3000);
+                    }
                 } else {
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -125,7 +134,11 @@ public class LoadingFragment extends Fragment {
                 }
             }
         });
+
+        return view;
     }
+
+
 
     // load interstitial ad
     public void loadInterstitialAd() {
@@ -179,39 +192,10 @@ public class LoadingFragment extends Fragment {
     }
 
     // check internet
-    public void isNetworkConnected(Context context) {
-        try {
+    public boolean isNetworkConnected(@NonNull Context context) {
             connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo != null) {
-                if (MainActivity.connect) {
-                    handler.postAtTime(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadInterstitialAd();
-                        }
-                    }, 8000);
-
-                } else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendPdfFragBundle();
-                        }
-                    }, 3000);
-                }
-            } else {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendPdfFragBundle();
-                    }
-                }, 3000);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
     // handle back button
