@@ -13,9 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
@@ -51,7 +49,7 @@ public class BookViewFragment extends Fragment {
 
     // variable for receive position, ch number
     public String getPosition, chNumber, getPageNum, pageNum;
-    public Boolean getBoolean,orientation = false;
+    public Boolean getBoolean, orientation = false;
     ImageView rotationMode, telegram, theme_change;
 
     // variable for view pdf
@@ -63,7 +61,7 @@ public class BookViewFragment extends Fragment {
     // variable for toolbar, appbar
     public MaterialToolbar toolbar;
     public AppBarLayout appBarLayout;
-    boolean show = false , chackTheme = false;
+    boolean show = false, checkTheme = false;
     long secondRemaining;
     private CountDownTimer countDownTimer;
 
@@ -122,7 +120,7 @@ public class BookViewFragment extends Fragment {
         getBundle();
         initVar();
         getLightModePdf();
-       // ifCheckPosition();
+        // ifCheckPosition();
         //init back method
         handleBackPressAndAutoFullscreen(v);
         // Ui visibility
@@ -324,33 +322,29 @@ public class BookViewFragment extends Fragment {
                     // | View.SYSTEM_UI_FLAG_IMMERSIVE
                     View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            |View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            |View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            |View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             );
             decorView.setFitsSystemWindows(true);
 
             appBarLayout.animate().translationY(-appBarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
             toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-//            rotationMode.animate().translationY(-rotationMode.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-//            telegram.animate().translationY(-telegram.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
             pdf_cardView.animate().translationY(-pdf_cardView.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
 
-//            rotationMode.setVisibility(View.GONE);
-//            telegram.setVisibility(View.GONE);
             pdf_cardView.setVisibility(View.GONE);
-            
+
 
             //================= Change Theme ===================//
             theme_change.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (chackTheme  == true){
+                    if (checkTheme == true) {
                         getLightModePdf();
-                        chackTheme = false;
-                    }else {
+                        checkTheme = false;
+                    } else {
                         getDarkModePdf();
-                        chackTheme = true;
+                        checkTheme = true;
                     }
                 }
             });
@@ -374,15 +368,11 @@ public class BookViewFragment extends Fragment {
             decorView.setFitsSystemWindows(true);
             decorView.setVisibility(View.VISIBLE);
             decorView.setSystemUiVisibility(View.VISIBLE);
-//
+
             appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
             toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-//            rotationMode.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-//            telegram.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
             pdf_cardView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
 
-//            rotationMode.setVisibility(View.VISIBLE);
-//            telegram.setVisibility(View.VISIBLE);
             pdf_cardView.setVisibility(View.VISIBLE);
         }
 

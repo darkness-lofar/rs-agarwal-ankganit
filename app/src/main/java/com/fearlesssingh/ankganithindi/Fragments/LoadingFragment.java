@@ -2,7 +2,6 @@ package com.fearlesssingh.ankganithindi.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -10,7 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,9 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.fearlesssingh.ankganithindi.MainActivity;
 import com.fearlesssingh.ankganithindi.R;
-import com.fearlesssingh.ankganithindi.SplashActivity;
 import com.fearlesssingh.ankganithindi.databinding.FragmentLoadingBinding;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -42,23 +39,20 @@ public class LoadingFragment extends Fragment {
     //variable for get bundle
     String getPositions, chNumbers, pageNum;
     Boolean getBooleans;
-    Handler handler = new Handler();
+
     // variable for interstitial ads
     private InterstitialAd mInterstitialAd;
     ConnectivityManager connectivityManager;
     NetworkInfo networkInfo;
     AppBarLayout appBarLayout;
     MaterialToolbar toolbar;
+    CountDownTimer countDownTimer, countdown;
 
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public LoadingFragment() {
         // Required empty public constructor
@@ -78,8 +72,9 @@ public class LoadingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            // TODO: Rename and change types of parameters
+            String mParam1 = getArguments().getString(ARG_PARAM1);
+            String mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -103,34 +98,15 @@ public class LoadingFragment extends Fragment {
         // invisible toolbar and layout
         toolbar.setVisibility(View.GONE);
         appBarLayout.setVisibility(View.GONE);
+        countdownTimer();
 
         MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
                 if (isNetworkConnected(requireContext())) {
-                    int random_int = (int) Math.floor(Math.random() * (2 - 1 + 1) + 1);
-                    if (1 == random_int) {
-                        handler.postAtTime(new Runnable() {
-                            @Override
-                            public void run() {
-                                loadInterstitialAd();
-                            }
-                        }, 7000);
-                    } else {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                sendPdfFragBundle();
-                            }
-                        }, 3000);
-                    }
+                    loadInterstitialAd();
                 } else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendPdfFragBundle();
-                        }
-                    }, 3000);
+                    countdown();
                 }
             }
         });
@@ -138,10 +114,38 @@ public class LoadingFragment extends Fragment {
         return view;
     }
 
+    public void countdownTimer() {
+        countDownTimer = new CountDownTimer(8000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
 
+            }
+
+            @Override
+            public void onFinish() {
+                sendPdfFragBundle();
+            }
+        };
+    }
+
+    public void countdown() {
+        countdown = new CountDownTimer(3000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                sendPdfFragBundle();
+            }
+        };
+        countdown.start();
+    }
 
     // load interstitial ad
     public void loadInterstitialAd() {
+        countDownTimer.start();
         if (System.currentTimeMillis() >= 2500) {
             AdRequest adRequest = new AdRequest.Builder().build();
             InterstitialAd.load(requireContext(), requireContext().getResources().getString(R.string.INTERSTITIAL_AD_UNIT_ID), adRequest,
@@ -152,9 +156,10 @@ public class LoadingFragment extends Fragment {
                             // an ad is loaded.
 
                             mInterstitialAd = interstitialAd;
-
                             if (mInterstitialAd != null) {
+                                countDownTimer.cancel();
                                 mInterstitialAd.show((Activity) requireContext());
+                                mInterstitialAd.setImmersiveMode(true);
                                 mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                                     @Override
                                     public void onAdDismissedFullScreenContent() {
@@ -167,14 +172,17 @@ public class LoadingFragment extends Fragment {
                                     public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                                         // Called when ad fails to show.
                                         Log.e("TAG", "Ad failed to show fullscreen content.");
+                                        countDownTimer.cancel();
                                         mInterstitialAd = null;
                                         sendPdfFragBundle();
                                     }
 
                                 });
                             } else {
+                                countDownTimer.cancel();
                                 sendPdfFragBundle();
                             }
+
 
                         }
 
@@ -183,19 +191,21 @@ public class LoadingFragment extends Fragment {
                             // Handle the error
                             Log.d("TAG", "Ad failed to show fullscreen content.");
                             mInterstitialAd = null;
+                            countDownTimer.cancel();
                             sendPdfFragBundle();
                         }
                     });
         } else {
+            countDownTimer.cancel();
             sendPdfFragBundle();
         }
     }
 
     // check internet
     public boolean isNetworkConnected(@NonNull Context context) {
-            connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            networkInfo = connectivityManager.getActiveNetworkInfo();
-            return networkInfo != null && networkInfo.isConnectedOrConnecting();
+        connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
     // handle back button
